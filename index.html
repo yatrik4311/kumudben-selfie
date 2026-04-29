@@ -13,35 +13,27 @@
   <body>
     <main id="app" class="app" aria-live="polite">
       <section class="camera-screen" id="cameraScreen">
-        <video id="video" class="video" autoplay playsinline muted></video>
-        <img
-          id="overlay"
-          class="overlay"
-          src="assets/overlay.png?v=20260429"
-          crossorigin="anonymous"
-          alt="Selfie overlay"
-          draggable="false"
-        />
+        <div class="capture-frame" id="captureFrame">
+          <video id="video" class="video" autoplay playsinline muted></video>
+          <img
+            id="overlay"
+            class="overlay"
+            src="assets/overlay.png?v=20260429"
+            crossorigin="anonymous"
+            alt="Selfie overlay"
+            draggable="false"
+          />
+        </div>
 
         <div id="loading" class="status status--loading">Starting camera…</div>
         <div id="error" class="status status--error hidden" role="alert"></div>
-
         <div id="countdown" class="countdown hidden" aria-live="assertive"></div>
 
         <div class="controls" id="cameraControls">
-          <button id="flipBtn" class="icon-btn" type="button" aria-label="Flip camera">
-            ↺
-          </button>
-          <button id="captureBtn" class="capture-btn" type="button" aria-label="Capture selfie">
-            Capture
-          </button>
+          <button id="flipBtn" class="icon-btn" type="button" aria-label="Flip camera">↺</button>
+          <button id="captureBtn" class="capture-btn" type="button" aria-label="Capture selfie">Capture</button>
         </div>
       </section>
-
-
-      <div id="rotatePrompt" class="rotate-prompt hidden" role="alert" aria-live="assertive">
-        <p>Please rotate your phone to landscape to continue.</p>
-      </div>
 
       <section class="result-screen hidden" id="resultScreen">
         <img id="resultImage" class="result-image" alt="Captured selfie with overlay" />
