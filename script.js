@@ -15,7 +15,6 @@ const downloadBtn = document.getElementById("downloadBtn");
 const shareBtn = document.getElementById("shareBtn");
 const retakeBtn = document.getElementById("retakeBtn");
 
-
 let overlayReady = false;
 
 let stream;
@@ -145,42 +144,60 @@ async function beep() {
 }
 
 function drawCapture() {
+  const previewRect = videoEl.getBoundingClientRect();
   const videoWidth = videoEl.videoWidth;
   const videoHeight = videoEl.videoHeight;
 
-  if (!videoWidth || !videoHeight) {
+  if (!videoWidth || !videoHeight || !previewRect.width || !previewRect.height) {
     throw new Error("Video frame not ready.");
   }
 
-  canvasEl.width = videoWidth;
-  canvasEl.height = videoHeight;
+  // Preserve what user actually sees (object-fit: cover) and keep high quality.
+  const dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 3));
+  const outputWidth = Math.round(previewRect.width * dpr);
+  const outputHeight = Math.round(previewRect.height * dpr);
+  canvasEl.width = outputWidth;
+  canvasEl.height = outputHeight;
 
   const ctx = canvasEl.getContext("2d", { alpha: false, willReadFrequently: false });
 
+  // Compute crop region of the video that corresponds to object-fit: cover.
+  const previewAspect = previewRect.width / previewRect.height;
+  const videoAspect = videoWidth / videoHeight;
+
+  let sx = 0;
+  let sy = 0;
+  let sWidth = videoWidth;
+  let sHeight = videoHeight;
+
+  if (videoAspect > previewAspect) {
+    // Video is wider than preview: crop left/right.
+    sWidth = videoHeight * previewAspect;
+    sx = (videoWidth - sWidth) / 2;
+  } else {
+    // Video is taller than preview: crop top/bottom.
+    sHeight = videoWidth / previewAspect;
+    sy = (videoHeight - sHeight) / 2;
+  }
+
   const isMirrored = videoEl.style.transform.includes("-1");
   if (isMirrored) {
-    ctx.translate(videoWidth, 0);
+    ctx.translate(outputWidth, 0);
     ctx.scale(-1, 1);
   }
 
-  ctx.drawImage(videoEl, 0, 0, videoWidth, videoHeight);
+  ctx.drawImage(videoEl, sx, sy, sWidth, sHeight, 0, 0, outputWidth, outputHeight);
 
   if (isMirrored) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
-  const vRect = videoEl.getBoundingClientRect();
-  const oRect = overlayEl.getBoundingClientRect();
-
-  const scaleX = videoWidth / vRect.width;
-  const scaleY = videoHeight / vRect.height;
-
-  const dx = (oRect.left - vRect.left) * scaleX;
-  const dy = (oRect.top - vRect.top) * scaleY;
-  const dWidth = oRect.width * scaleX;
-  const dHeight = oRect.height * scaleY;
-
-  if (overlayReady) {
+  const overlayRect = overlayEl.getBoundingClientRect();
+  if (overlayReady && overlayRect.width > 0 && overlayRect.height > 0) {
+    const dx = (overlayRect.left - previewRect.left) * dpr;
+    const dy = (overlayRect.top - previewRect.top) * dpr;
+    const dWidth = overlayRect.width * dpr;
+    const dHeight = overlayRect.height * dpr;
     ctx.drawImage(overlayEl, dx, dy, dWidth, dHeight);
   }
 
@@ -188,17 +205,8 @@ function drawCapture() {
     return canvasEl.toDataURL("image/png");
   } catch (error) {
     if (error?.name === "SecurityError" && overlayReady) {
-      // Fallback when remote overlay URL taints canvas due missing CORS headers.
       overlayReady = false;
       setError("Overlay host blocks canvas export (CORS). Capturing photo without overlay.");
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, videoWidth, videoHeight);
-      if (isMirrored) {
-        ctx.translate(videoWidth, 0);
-        ctx.scale(-1, 1);
-      }
-      ctx.drawImage(videoEl, 0, 0, videoWidth, videoHeight);
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
       return canvasEl.toDataURL("image/png");
     }
     throw error;
