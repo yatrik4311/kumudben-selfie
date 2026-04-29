@@ -23,11 +23,11 @@ html, body { width: 100%; height: 100%; margin: 0; background: var(--bg); color:
 
 .overlay {
   position: absolute;
-  left: -41%;
+  left: -23%;
   bottom: 0;
-  width: 200%;
+  width: 165%;
   height: auto;
-  max-height: 96%;
+ 
   object-fit: contain;
   pointer-events: none;
   user-select: none;
