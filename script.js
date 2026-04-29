@@ -15,6 +15,9 @@ const downloadBtn = document.getElementById("downloadBtn");
 const shareBtn = document.getElementById("shareBtn");
 const retakeBtn = document.getElementById("retakeBtn");
 
+
+let overlayReady = false;
+
 let stream;
 let facingMode = "user";
 let captureInProgress = false;
@@ -29,6 +32,34 @@ function clearError() {
   errorEl.textContent = "";
 }
 
+
+function setupOverlay() {
+  // Helps when using a CDN URL for overlay (requires server CORS headers).
+  overlayEl.crossOrigin = "anonymous";
+
+  const onOverlayLoad = () => {
+    overlayReady = overlayEl.naturalWidth > 0 && overlayEl.naturalHeight > 0;
+    if (overlayReady) {
+      clearError();
+    }
+  };
+
+  const onOverlayError = () => {
+    overlayReady = false;
+    setError("Overlay image failed to load. Check assets/overlay.png path or CORS on remote URL.");
+  };
+
+  if (overlayEl.complete) {
+    if (overlayEl.naturalWidth > 0) {
+      onOverlayLoad();
+    } else {
+      onOverlayError();
+    }
+  }
+
+  overlayEl.addEventListener("load", onOverlayLoad);
+  overlayEl.addEventListener("error", onOverlayError);
+}
 function stopStream() {
   if (!stream) return;
   stream.getTracks().forEach((track) => track.stop());
@@ -62,6 +93,10 @@ async function startCamera() {
     videoEl.srcObject = stream;
     await videoEl.play();
     loadingEl.classList.add("hidden");
+
+    if (!overlayReady) {
+      setError("Overlay not loaded yet. Check image path/CORS or wait a moment.");
+    }
 
     const [track] = stream.getVideoTracks();
     const settings = track?.getSettings?.() || {};
@@ -145,9 +180,29 @@ function drawCapture() {
   const dWidth = oRect.width * scaleX;
   const dHeight = oRect.height * scaleY;
 
-  ctx.drawImage(overlayEl, dx, dy, dWidth, dHeight);
+  if (overlayReady) {
+    ctx.drawImage(overlayEl, dx, dy, dWidth, dHeight);
+  }
 
-  return canvasEl.toDataURL("image/png");
+  try {
+    return canvasEl.toDataURL("image/png");
+  } catch (error) {
+    if (error?.name === "SecurityError" && overlayReady) {
+      // Fallback when remote overlay URL taints canvas due missing CORS headers.
+      overlayReady = false;
+      setError("Overlay host blocks canvas export (CORS). Capturing photo without overlay.");
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, videoWidth, videoHeight);
+      if (isMirrored) {
+        ctx.translate(videoWidth, 0);
+        ctx.scale(-1, 1);
+      }
+      ctx.drawImage(videoEl, 0, 0, videoWidth, videoHeight);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      return canvasEl.toDataURL("image/png");
+    }
+    throw error;
+  }
 }
 
 async function capture() {
@@ -220,4 +275,5 @@ window.addEventListener("orientationchange", () => {
 
 window.addEventListener("beforeunload", stopStream);
 
+setupOverlay();
 startCamera();
