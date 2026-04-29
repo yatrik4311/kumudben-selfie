@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <title>Selfie Overlay Camera</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main id="app" class="app" aria-live="polite">
+      <section class="camera-screen" id="cameraScreen">
+        <video id="video" class="video" autoplay playsinline muted></video>
+        <img
+          id="overlay"
+          class="overlay"
+          src="assets/overlay.png"
+          alt="Selfie overlay"
+          draggable="false"
+        />
+
+        <div id="loading" class="status status--loading">Starting camera…</div>
+        <div id="error" class="status status--error hidden" role="alert"></div>
+
+        <div id="countdown" class="countdown hidden" aria-live="assertive"></div>
+
+        <div class="controls" id="cameraControls">
+          <button id="flipBtn" class="icon-btn" type="button" aria-label="Flip camera">
+            ↺
+          </button>
+          <button id="captureBtn" class="capture-btn" type="button" aria-label="Capture selfie">
+            Capture
+          </button>
+        </div>
+      </section>
+
+      <section class="result-screen hidden" id="resultScreen">
+        <img id="resultImage" class="result-image" alt="Captured selfie with overlay" />
+        <div class="result-actions">
+          <a id="downloadBtn" class="action-btn" download="selfie-overlay.png">Download</a>
+          <button id="shareBtn" class="action-btn" type="button">Share</button>
+          <button id="retakeBtn" class="action-btn action-btn--secondary" type="button">Retake</button>
+        </div>
+      </section>
+    </main>
+
+    <canvas id="captureCanvas" class="hidden" aria-hidden="true"></canvas>
+    <script src="script.js"></script>
+  </body>
+</html>
