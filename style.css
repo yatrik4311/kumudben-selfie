@@ -46,7 +46,7 @@ body {
   position: absolute;
   right: max(4vw, 12px);
   bottom: calc(env(safe-area-inset-bottom, 0px) + 4.8rem);
-  width: clamp(110px, 30vw, 240px);
+  width: clamp(150px, 42vw, 340px);
   height: auto;
   object-fit: contain;
   pointer-events: none;
@@ -130,7 +130,8 @@ body {
 .result-image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
   background: #111;
 }
 
