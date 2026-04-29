@@ -14,6 +14,7 @@ const resultImageEl = document.getElementById("resultImage");
 const downloadBtn = document.getElementById("downloadBtn");
 const shareBtn = document.getElementById("shareBtn");
 const retakeBtn = document.getElementById("retakeBtn");
+const rotatePromptEl = document.getElementById("rotatePrompt");
 
 let overlayReady = false;
 
@@ -59,6 +60,24 @@ function setupOverlay() {
   overlayEl.addEventListener("load", onOverlayLoad);
   overlayEl.addEventListener("error", onOverlayError);
 }
+
+function isLandscape() {
+  return window.matchMedia("(orientation: landscape)").matches;
+}
+
+function updateOrientationLockUI() {
+  const locked = !isLandscape();
+  rotatePromptEl.classList.toggle("hidden", !locked);
+  captureBtn.disabled = locked;
+  flipBtn.disabled = locked;
+  if (locked) {
+    setError("Landscape mode required. Rotate your phone.");
+  } else if (errorEl.textContent === "Landscape mode required. Rotate your phone.") {
+    clearError();
+  }
+  return !locked;
+}
+
 function stopStream() {
   if (!stream) return;
   stream.getTracks().forEach((track) => track.stop());
@@ -67,6 +86,8 @@ function stopStream() {
 
 async function startCamera() {
   clearError();
+
+  if (!updateOrientationLockUI()) return;
 
   if (!navigator.mediaDevices?.getUserMedia) {
     setError("Your browser does not support camera access.");
@@ -215,6 +236,7 @@ function drawCapture() {
 
 async function capture() {
   if (captureInProgress) return;
+  if (!updateOrientationLockUI()) return;
   captureInProgress = true;
   captureBtn.disabled = true;
 
@@ -277,11 +299,16 @@ retakeBtn.addEventListener("click", async () => {
   await startCamera();
 });
 
-window.addEventListener("orientationchange", () => {
-  // Overlay uses CSS centering + responsive sizing and stays aligned.
+window.addEventListener("orientationchange", async () => {
+  const ready = updateOrientationLockUI();
+  if (ready && !stream) {
+    await startCamera();
+  }
 });
+window.addEventListener("resize", updateOrientationLockUI);
 
 window.addEventListener("beforeunload", stopStream);
 
 setupOverlay();
+updateOrientationLockUI();
 startCamera();

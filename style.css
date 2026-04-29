@@ -44,7 +44,7 @@ body {
 
 .overlay {
   position: absolute;
-  right: max(4vw, 12px);
+  left: max(4vw, 12px);
   bottom: calc(env(safe-area-inset-bottom, 0px) + 4.8rem);
   width: clamp(150px, 42vw, 340px);
   height: auto;
@@ -159,4 +159,25 @@ body {
 
 .hidden {
   display: none !important;
+}
+
+
+.rotate-prompt {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 1.25rem;
+  background: rgb(0 0 0 / 88%);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+@media (orientation: portrait) {
+  .rotate-prompt {
+    display: grid !important;
+  }
 }
