@@ -19,7 +19,8 @@ const retakeBtn = document.getElementById("retakeBtn");
 
 const FRAME_TITLE_LINES = [
   "શ્રી દામજીભાઈ પદમશી શાહ પાઠશાળાના",
-  "રિયુનિયન પ્રોગ્રામની યાદી"
+  "રિયુનિયન પ્રોગ્રામની યાદી",
+  "તા. 10-05-2026"
 ];
 
 let overlayReady = false;
@@ -173,7 +174,7 @@ function drawRoundedBorder(ctx, x, y, width, height, radius) {
 
 function drawFramedSelfie(squareCanvas, outputSize) {
   const margin = Math.round(outputSize * 0.055);
-  const footerHeight = Math.round(outputSize * 0.25);
+  const footerHeight = Math.round(outputSize * 0.3);
   const borderRadius = Math.round(outputSize * 0.035);
   const finalWidth = outputSize + margin * 2;
   const finalHeight = outputSize + margin * 2 + footerHeight;
@@ -215,8 +216,8 @@ function drawFramedSelfie(squareCanvas, outputSize) {
   const logoColumnWidth = Math.round(footerContentWidth * 0.2);
   const textColumnWidth = footerContentWidth - logoColumnWidth;
   const logoSize = Math.min(
-    Math.round(logoColumnWidth * 0.82),
-    Math.round(footerContentHeight * 0.82)
+    Math.round(logoColumnWidth * 0.96),
+    Math.round(footerContentHeight * 0.96)
   );
   const logoX = footerContentX + Math.round((logoColumnWidth - logoSize) / 2);
   const logoY = footerContentY + Math.round((footerContentHeight - logoSize) / 2);
@@ -229,10 +230,12 @@ function drawFramedSelfie(squareCanvas, outputSize) {
   ctx.fillStyle = "#9d0015";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.font = `700 ${Math.round(outputSize * 0.04)}px system-ui, -apple-system, sans-serif`;
-  ctx.fillText(FRAME_TITLE_LINES[0], textLeft + textWidth / 2, footerY + footerHeight * 0.42, textWidth);
-  ctx.font = `700 ${Math.round(outputSize * 0.045)}px system-ui, -apple-system, sans-serif`;
-  ctx.fillText(FRAME_TITLE_LINES[1], textLeft + textWidth / 2, footerY + footerHeight * 0.67, textWidth);
+  ctx.font = `700 ${Math.round(outputSize * 0.037)}px system-ui, -apple-system, sans-serif`;
+  ctx.fillText(FRAME_TITLE_LINES[0], textLeft + textWidth / 2, footerY + footerHeight * 0.33, textWidth);
+  ctx.font = `700 ${Math.round(outputSize * 0.041)}px system-ui, -apple-system, sans-serif`;
+  ctx.fillText(FRAME_TITLE_LINES[1], textLeft + textWidth / 2, footerY + footerHeight * 0.55, textWidth);
+  ctx.font = `700 ${Math.round(outputSize * 0.036)}px system-ui, -apple-system, sans-serif`;
+  ctx.fillText(FRAME_TITLE_LINES[2], textLeft + textWidth / 2, footerY + footerHeight * 0.76, textWidth);
 
   return canvasEl.toDataURL("image/png");
 }

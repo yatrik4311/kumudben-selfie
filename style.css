@@ -24,9 +24,9 @@ html, body { width: 100%; height: 100%; margin: 0; background: var(--bg); color:
 
 .overlay {
   position: absolute;
-     left: -17%;
-    bottom: 0;
-    width: 142%;
+  left: -17%;
+  bottom: 0;
+  width: 142%;
   height: auto;
   max-height: none;
   object-fit: contain;
