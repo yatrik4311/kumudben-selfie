@@ -20,7 +20,7 @@ const retakeBtn = document.getElementById("retakeBtn");
 const FRAME_TITLE_LINES = [
   "શ્રી દામજીભાઈ પદમશી શાહ પાઠશાળાના",
   "રિયુનિયન પ્રોગ્રામની યાદી",
-  "તા. 07-05-2026"
+  "તા. 10-05-2026"
 ];
 
 let overlayReady = false;
