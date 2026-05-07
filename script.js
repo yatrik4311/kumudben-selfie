@@ -208,15 +208,24 @@ function drawFramedSelfie(squareCanvas, outputSize) {
   ctx.lineTo(finalWidth - margin, footerY + margin * 0.5);
   ctx.stroke();
 
-  const logoSize = Math.round(footerHeight * 0.72);
-  const logoX = margin;
-  const logoY = footerY + Math.round((footerHeight - logoSize) / 2) + Math.round(margin * 0.2);
+  const footerContentX = margin;
+  const footerContentY = footerY + Math.round(margin * 0.42);
+  const footerContentWidth = finalWidth - margin * 2;
+  const footerContentHeight = footerHeight - Math.round(margin * 0.15);
+  const logoColumnWidth = Math.round(footerContentWidth * 0.2);
+  const textColumnWidth = footerContentWidth - logoColumnWidth;
+  const logoSize = Math.min(
+    Math.round(logoColumnWidth * 0.82),
+    Math.round(footerContentHeight * 0.82)
+  );
+  const logoX = footerContentX + Math.round((logoColumnWidth - logoSize) / 2);
+  const logoY = footerContentY + Math.round((footerContentHeight - logoSize) / 2);
   if (logoReady) {
     ctx.drawImage(logoEl, logoX, logoY, logoSize, logoSize);
   }
 
-  const textLeft = logoReady ? logoX + logoSize + margin * 0.45 : margin;
-  const textWidth = finalWidth - textLeft - margin;
+  const textLeft = footerContentX + logoColumnWidth;
+  const textWidth = textColumnWidth;
   ctx.fillStyle = "#9d0015";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
